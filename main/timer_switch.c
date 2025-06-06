@@ -9,13 +9,38 @@ static const char *TAG = "timer_switch";
 
 #define GPIO_OUTPUT_PIN 2
 
+#ifdef UNIT_TEST
+esp_timer_handle_t on_timer;
+esp_timer_handle_t off_timer;
+bool cycle_mode = false;
+int64_t on_duration_us = 1000000;  // default 1s
+int64_t off_duration_us = 1000000; // default 1s
+#else
 static esp_timer_handle_t on_timer;
 static esp_timer_handle_t off_timer;
 static bool cycle_mode = false;
 static int64_t on_duration_us = 1000000;  // default 1s
 static int64_t off_duration_us = 1000000; // default 1s
+#endif
 
+static void on_timer_callback(void* arg);
 static void off_timer_callback(void* arg);
+
+void timer_switch_init(void)
+{
+    gpio_reset_pin(GPIO_OUTPUT_PIN);
+    gpio_set_direction(GPIO_OUTPUT_PIN, GPIO_MODE_OUTPUT);
+
+    const esp_timer_create_args_t on_args = {
+        .callback = &on_timer_callback,
+        .name = "on_timer"};
+    esp_timer_create(&on_args, &on_timer);
+
+    const esp_timer_create_args_t off_args = {
+        .callback = &off_timer_callback,
+        .name = "off_timer"};
+    esp_timer_create(&off_args, &off_timer);
+}
 
 static void on_timer_callback(void* arg)
 {
@@ -45,7 +70,10 @@ static esp_err_t app_event_cb(void *arg, esp_event_base_t event_base, int32_t ev
     return ESP_OK;
 }
 
-static void start_continuous(bool on)
+#ifndef UNIT_TEST
+static
+#endif
+void start_continuous(bool on)
 {
     cycle_mode = false;
     esp_timer_stop(on_timer);
@@ -53,7 +81,10 @@ static void start_continuous(bool on)
     gpio_set_level(GPIO_OUTPUT_PIN, on ? 1 : 0);
 }
 
-static void start_cycle(int64_t on_us, int64_t off_us)
+#ifndef UNIT_TEST
+static
+#endif
+void start_cycle(int64_t on_us, int64_t off_us)
 {
     on_duration_us = on_us;
     off_duration_us = off_us;
@@ -64,18 +95,7 @@ static void start_cycle(int64_t on_us, int64_t off_us)
 
 void app_main(void)
 {
-    gpio_reset_pin(GPIO_OUTPUT_PIN);
-    gpio_set_direction(GPIO_OUTPUT_PIN, GPIO_MODE_OUTPUT);
-
-    const esp_timer_create_args_t on_args = {
-        .callback = &on_timer_callback,
-        .name = "on_timer"};
-    esp_timer_create(&on_args, &on_timer);
-
-    const esp_timer_create_args_t off_args = {
-        .callback = &off_timer_callback,
-        .name = "off_timer"};
-    esp_timer_create(&off_args, &off_timer);
+    timer_switch_init();
 
     esp_matter_init();
     esp_event_handler_register(ESP_MATTER_EVENT, ESP_EVENT_ANY_ID, &app_event_cb, NULL);
