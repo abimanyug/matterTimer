@@ -1,7 +1,7 @@
 #include "esp_stub.h"
 #include "../main/timer_switch.h"
-#include <assert.h>
-#include <stdio.h>
+#include <cassert>
+#include <cstdio>
 
 int main(void) {
     timer_switch_init();
