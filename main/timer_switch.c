@@ -5,6 +5,9 @@
 #include "app_priv.h"
 #include "esp_event.h"
 
+/* Start Matter commissioning and print the onboarding QR code */
+void esp_matter_start_commissioning(esp_matter_node_t *node);
+
 static const char *TAG = "timer_switch";
 
 #define GPIO_OUTPUT_PIN 2
@@ -104,6 +107,9 @@ void app_main(void)
     esp_matter_node_t *node = esp_matter_node_create();
     esp_matter_endpoint_t *endpoint = esp_matter_endpoint_create(node, ESP_MATTER_ENDPOINT_PRIMARY, "TimerSwitch", NULL);
     esp_matter_switch_add(endpoint);
+
+    /* Start commissioning so the user can provide Wi-Fi credentials */
+    esp_matter_start_commissioning(node);
 
     esp_matter_start(node, NULL, 0, NULL);  // start matter stack
 

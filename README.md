@@ -15,8 +15,10 @@ The example uses the ESP‑Matter SDK and targets the ESP32‑C6.
 ## Usage
 
 1. Set up [ESP‑IDF](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/index.html) and the [ESP‑Matter](https://github.com/espressif/esp-matter) SDK.
-2. Configure the project using `idf.py menuconfig` to select your Wi‑Fi credentials and other parameters.
-3. Build and flash with `idf.py -p PORT flash monitor`.
+2. Build and flash with `idf.py -p PORT flash monitor`.
+3. When the device boots, scan the printed QR code with a Matter commissioner and provide your Wi‑Fi credentials during commissioning.
+
+Wi‑Fi credentials no longer need to be configured via `menuconfig`.
 
 The `app_main` function in `timer_switch.c` shows an example that cycles the GPIO on for 60 s and off for 30 s. Modify the call to `start_cycle` or use `start_continuous` to change behaviour as needed.
 

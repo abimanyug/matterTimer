@@ -36,5 +36,6 @@ esp_matter_endpoint_t* esp_matter_endpoint_create(esp_matter_node_t* n, int id, 
 void esp_matter_switch_add(esp_matter_endpoint_t* e) {}
 void esp_matter_init(void) {}
 void esp_matter_start(esp_matter_node_t* n, void* a, int b, void* c) {}
+void esp_matter_start_commissioning(esp_matter_node_t* n) {}
 
 esp_err_t esp_event_handler_register(esp_event_base_t base, int32_t id, esp_err_t (*cb)(void*, esp_event_base_t, int32_t, void*), void* arg) { return ESP_OK; }
